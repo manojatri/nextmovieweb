@@ -7,49 +7,26 @@ const mulish = Mulish({
     subsets: ['latin'],
     display: 'swap',
     weight: ['300', '400', '500', '600', '700', '800', '900']
-})
+});
+import submitContact from "../contact/action";
 
 const ContactForm = () => {
-   const [user, setUser] = useState({
-    username : "",
-    email : "",
-    phone : "",
-    message : ""
-   });
+   
+    const [status, setStatus] = useState(null);   
 
-   const [status, setStatus] = useState(null);
-
-   const handleChange = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
-
-        setUser((prevUser) => ({...prevUser, [name] : value}))
-   }
-
-   const handleSubmit = async(e) => {
-        e.preventDefault();
+   const handleSubmit = async(formData) => {
         try {
-
-            const response = await fetch('/api/contact', {
-                method:'POST',
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({
-                    username: user.username,
-                    email: user.email,
-                    phone: user.phone,
-                    message: user.message
-                })
-            })
+            const response = await submitContact({
+                username: formData.get("username"),
+                email: formData.get("email"),
+                phone: formData.get("phone"),
+                message: formData.get("message")
+            })          
+            
             
             // Set the status based on the response from the API route
 
-            if (response.status === 200) {
-                setUser({
-                    username : "",
-                    email : "",
-                    phone : "",
-                    message : ""
-                })
+            if (response.status === "OK") {
                 setStatus('success')
             } else {
                 setStatus('error')
@@ -62,31 +39,31 @@ const ContactForm = () => {
 
 
   return (
-    <form className={styles.contact_form} onSubmit={handleSubmit}>
+    <form className={styles.contact_form} action={handleSubmit}>
         <div className={styles.input_field}>
             <label htmlFor="username" className={styles.label}>
                 Enter your name
-                <input type="text" name="username" id="username" value={user.username} onChange={handleChange} placeholder="Enter your name" className={mulish.className} required autoComplete="off" />
+                <input type="text" name="username" id="username" placeholder="Enter your name" className={mulish.className} required autoComplete="off" />
             </label>
         </div>
         <div className={styles.input_field}>
             <label htmlFor="email" className={styles.label}>
                 Email
-                <input type="text" name="email" id="email" value={user.email} onChange={handleChange} placeholder="Enter your email" className={mulish.className} required autoComplete="off" />
+                <input type="text" name="email" id="email" placeholder="Enter your email" className={mulish.className} required autoComplete="off" />
                 </label>
             </div>
 
             <div className={styles.input_field}>
                 <label htmlFor="phone" className={styles.label}>
                     Phone Number
-                    <input type="number" name="phone" id="phone" value={user.phone} onChange={handleChange} placeholder="Enter your phone" className={mulish.className} required autoComplete="off" />
+                    <input type="number" name="phone" id="phone" placeholder="Enter your phone" className={mulish.className} required autoComplete="off" />
                 </label>
             </div>
 
             <div className={styles.input_field}>
                 <label htmlFor="message" className={styles.label}>
                     Message
-                    <textarea  name="message" id="message" value={user.message} onChange={handleChange} rows={5} placeholder="Enter your Message" className={mulish.className} required autoComplete="off" />
+                    <textarea  name="message" id="message" rows={5} placeholder="Enter your Message" className={mulish.className} required autoComplete="off" />
                 </label>
             </div>
 
